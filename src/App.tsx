@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import { StatusTable } from "./StatusTable/StatusTable";
 
 function App() {
