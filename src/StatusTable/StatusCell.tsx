@@ -1,29 +1,49 @@
-import React from "react";
-import { IntEnvStatus, Status } from "../types/Status";
+import React, { useEffect, useState } from "react";
+import { Status } from "../types/Status";
+import LoadingIcons from "react-loading-icons";
+import { Env } from "../types/Envs";
+import { AxiosClient } from "../httpCheck/axiosClient";
 
 interface StatusRowProps {
-  status: IntEnvStatus;
+  axiosClient: AxiosClient;
+  integration: string;
+  env: Env;
+  shouldRefresh: any;
 }
 
-export class StatusCell extends React.Component<StatusRowProps> {
-  render() {
-    return (
-      <div className="hcsContainer">
-        <div className="hcsIngressStatus">
-          Ingress: {getStatusSymbol(this.props.status.ingress)}
-        </div>
-        <div className="hcsEgressStatus">
-          Engress: {getStatusSymbol(this.props.status.egress)}
-        </div>
-      </div>
+export function StatusCell(props: StatusRowProps) {
+  const [currentIngressStatus, setIngressStatus] = useState<Status>("LOADING");
+  const [currentEgressStatus, setEgressStatus] = useState<Status>("LOADING");
+  useEffect(() => {
+    setEgressStatus("LOADING");
+    setIngressStatus("LOADING");
+    GetCurrentStatus(props.axiosClient).then((status) =>
+      setIngressStatus(status)
     );
-  }
+    GetCurrentStatus(props.axiosClient).then((status) =>
+      setEgressStatus(status)
+    );
+  }, [props.shouldRefresh]);
+
+  // const TriggeredFunc = async () => {
+  //   setIngressStatus(await GetCurrentStatus(props.axiosClient));
+  // };
+  return (
+    <div className="flex flex-col">
+      <div className="flex flex-row">
+        Ingress: {getStatusSymbol(currentIngressStatus)}
+      </div>
+      <div className="flex flex-row">
+        Engress: {getStatusSymbol(currentEgressStatus)}
+      </div>
+    </div>
+  );
 }
 
 function getStatusSymbol(status: Status) {
   switch (status) {
-    case "IN_PROGRESS":
-      return "🔎";
+    case "LOADING":
+      return <LoadingIcons.Rings height="24" />;
 
     case "FAILED":
       return "❌";
@@ -31,4 +51,10 @@ function getStatusSymbol(status: Status) {
     case "PASSED":
       return "✅";
   }
+}
+
+async function GetCurrentStatus(axiosClient: AxiosClient) {
+  const response = await axiosClient.makeRandomCall();
+  if (response === 400 || response === 500) return "FAILED";
+  return "PASSED";
 }

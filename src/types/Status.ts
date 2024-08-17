@@ -11,4 +11,4 @@ export type IntegrationStatus = {
 
 export type IntEnvStatus = { ingress: Status; egress: Status };
 
-export type Status = "FAILED" | "PASSED" | "IN_PROGRESS";
+export type Status = "FAILED" | "PASSED" | "LOADING";
