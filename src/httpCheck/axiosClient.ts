@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 export type AxiosCallConfig = {
   method: string;
@@ -28,20 +28,5 @@ export class AxiosClient {
         resolve(endpoint);
       }, randomSleep);
     });
-
-    // try {
-    //   response = this.axios.request({
-    //     method: "GET",
-    //     url: `${endpoint}`,
-    //     params: { sleep: randomSleep },
-    //   });
-    // } catch (error) {
-    //   const err = error as AxiosError;
-    //   if (!response) throw Error("NO RESPONSE");
-
-    //   response = err.response;
-    // }
-
-    // return response;
   }
 }

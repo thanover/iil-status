@@ -1,60 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { Status } from "../types/Status";
-import LoadingIcons from "react-loading-icons";
+import { StatusDetails, getStatusSymbol } from "../types/Status";
 import { Env } from "../types/Envs";
 import { AxiosClient } from "../httpCheck/axiosClient";
+import { StatusHistory } from "./statusHistory";
 
-interface StatusRowProps {
-  axiosClient: AxiosClient;
+interface StatusCellProps {
   integration: string;
   env: Env;
   shouldRefresh: any;
+  ingressEgress: "ingress" | "egress";
 }
 
-export function StatusCell(props: StatusRowProps) {
-  const [currentIngressStatus, setIngressStatus] = useState<Status>("LOADING");
-  const [currentEgressStatus, setEgressStatus] = useState<Status>("LOADING");
-  useEffect(() => {
-    setEgressStatus("LOADING");
-    setIngressStatus("LOADING");
-    GetCurrentStatus(props.axiosClient).then((status) =>
-      setIngressStatus(status)
-    );
-    GetCurrentStatus(props.axiosClient).then((status) =>
-      setEgressStatus(status)
-    );
-  }, [props.shouldRefresh]);
+export function StatusCell(props: StatusCellProps) {
+  const [currentStatus, setStatus] = useState<400 | 500 | 200 | "LOADING">(
+    "LOADING"
+  );
+  const [statusHistory, setStatusHistory] = useState<StatusDetails[]>([]);
 
-  // const TriggeredFunc = async () => {
-  //   setIngressStatus(await GetCurrentStatus(props.axiosClient));
-  // };
+  useEffect(() => {
+    console.log("useEffect has been called");
+    const previousStatus = currentStatus;
+    if (previousStatus !== "LOADING")
+      statusHistory.push({ returnedCode: previousStatus });
+    if (statusHistory.length > 5) {
+      statusHistory.shift();
+    }
+    setStatusHistory(statusHistory);
+
+    async function GetCurrentStatus() {
+      const axiosClient = new AxiosClient("https://google.com");
+      const response = await axiosClient.makeRandomCall();
+      return response;
+    }
+    setStatus("LOADING");
+    GetCurrentStatus().then((status) => {
+      setStatus(status);
+    });
+  }, [props.shouldRefresh, setStatus, setStatusHistory, statusHistory]);
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
-        Ingress: {getStatusSymbol(currentIngressStatus)}
+        {props.ingressEgress}: {getStatusSymbol(currentStatus)}
       </div>
-      <div className="flex flex-row">
-        Engress: {getStatusSymbol(currentEgressStatus)}
-      </div>
+      {statusHistory.length > 0 && (
+        <StatusHistory statusHistory={statusHistory} />
+      )}
     </div>
   );
-}
-
-function getStatusSymbol(status: Status) {
-  switch (status) {
-    case "LOADING":
-      return <LoadingIcons.Rings height="24" />;
-
-    case "FAILED":
-      return "❌";
-
-    case "PASSED":
-      return "✅";
-  }
-}
-
-async function GetCurrentStatus(axiosClient: AxiosClient) {
-  const response = await axiosClient.makeRandomCall();
-  if (response === 400 || response === 500) return "FAILED";
-  return "PASSED";
 }

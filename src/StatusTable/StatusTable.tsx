@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { StatusTableHeader } from "./StatusTableHeader";
 import { StatusRow } from "./StatusRow";
-import { StatusReport } from "../types/Status";
 import { Integrations } from "../types/Integrations";
-import { getLoadingStatus } from "../httpCheck/loadingStatus";
-import { AxiosClient } from "../httpCheck/axiosClient";
-
-const axiosClient = new AxiosClient("https://httpstat.us/");
 
 export function StatusTable() {
   const [refresh, setShouldRefresh] = useState(0);
@@ -28,11 +23,7 @@ export function StatusTable() {
       <div>
         <StatusTableHeader />
         {Integrations.map((integration) => (
-          <StatusRow
-            integration={integration}
-            shouldRefresh={refresh}
-            axiosClient={axiosClient}
-          />
+          <StatusRow integration={integration} shouldRefresh={refresh} />
         ))}
       </div>
     </div>

@@ -1,4 +1,3 @@
-import React from "react";
 import { cellClassName, rowClassName } from "./commonClassNames";
 import { Envs } from "../types/Envs";
 
