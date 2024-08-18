@@ -36,7 +36,13 @@ export function StatusCell(props: StatusCellProps) {
     GetCurrentStatus().then((status) => {
       setStatus(status);
     });
-  }, [props.shouldRefresh, setStatus, setStatusHistory, statusHistory]);
+  }, [
+    props.shouldRefresh,
+    setStatus,
+    setStatusHistory,
+    statusHistory,
+    currentStatus,
+  ]);
 
   return (
     <div className="flex flex-col">
