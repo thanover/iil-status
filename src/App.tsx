@@ -3,8 +3,8 @@ import { StatusTable } from "./StatusTable/StatusTable";
 
 function App() {
   return (
-    <div className="App  bg-slate-900">
-      <header className=" bg-slate-900"></header>
+    <div className="App  bg-slate">
+      <header className=" bg-slate"></header>
       <StatusTable />
     </div>
   );

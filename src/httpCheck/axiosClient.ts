@@ -21,8 +21,8 @@ export class AxiosClient {
 
   async makeRandomCall() {
     const endpoint =
-      Math.random() > 0.66 ? 200 : Math.random() > 0.33 ? 500 : 400;
-    const randomSleep = Math.floor(Math.random() * 10000);
+      Math.random() > 0.1 ? 200 : Math.random() > 0.33 ? 500 : 400;
+    const randomSleep = Math.floor(Math.random() * 1000);
     return new Promise<400 | 500 | 200>((resolve, reject) => {
       setTimeout(() => {
         resolve(endpoint);
